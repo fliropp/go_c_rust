@@ -44,15 +44,17 @@ func main() {
 
 	fmt.Println("c_go:")
 	fmt.Println(slaize)
-	cBefore = time.Now()
-	var cints C.struct_CData
+	l := len(slaize)
+	cints := make([]C.int, l)
 	for i, d := range slaize {
-		cints.list[i] = C.int(d)
+		cints[i] = C.int(d)
 	}
-	//C.cBubbleSort((*C.int)(&claize[0]), C.int(len(claize)))
-	C.cBubbleSort(&cints, C.int(len(slaize)))
+	fmt.Println(cints)
+	cd := C.createCData(&C.struct_CData{}, (*C.int)(&cints[0]), C.int(len(cints)))
+	cBefore = time.Now()
+	C.cBubbleSort(cd, C.int(len(cints)))
 	fmt.Println(fmt.Sprintf("c bubble sort took: %d", time.Since(cBefore)))
-	fmt.Println(cints.list)
+	fmt.Println(len(cints))
 
 	fmt.Println("r_go:")
 	fmt.Println(slaize)

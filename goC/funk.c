@@ -1,5 +1,6 @@
 //funk.c
 #include <stdio.h>
+#include <stdlib.h>
 
 int cLoop() {
   int s = 0;
@@ -18,8 +19,20 @@ void swap(int* xp, int* yp)
 }
 
 struct CData {
-  int list[9];
+  int size;
+  int list[];
 };
+
+struct CData *createCData(struct CData *cd, int list[], int size) {
+    cd = malloc( sizeof(*cd) + sizeof(int) * size);
+    int i;
+    cd->size = size;
+    for (i = 0; i < size; i++) {
+      cd->list[i] = list[i];
+    }
+    return cd;
+
+}
 
 void cBubbleSort(struct CData *data, int s) {
   int i,j;
@@ -31,13 +44,4 @@ void cBubbleSort(struct CData *data, int s) {
     }
   }
 
-/*void cBubbleSort(int *list, int s) {
-  int i,j;
-  for (int i = 0; i < s - 1; i++) {
-    for (int j = 0; j < s - i - 1; j++) {
-      if (list[j] > list[j + 1]) {
-        swap(&list[j], &list[j + 1]);
-      }
-    }
-  }*/
 }
