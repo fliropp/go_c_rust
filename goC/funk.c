@@ -11,27 +11,27 @@ int cLoop() {
   return s;
 }
 
-void swap(int* xp, int* yp)
-{
+void swap(int* xp, int* yp) {
     int temp = *xp;
     *xp = *yp;
     *yp = temp;
 }
 
-struct CData {
+typedef struct CData {
   int size;
-  int list[];
-};
+  int *list;
+} CData;
 
-struct CData *createCData(struct CData *cd, int list[], int size) {
-    cd = malloc( sizeof(*cd) + sizeof(int) * size);
+struct CData *createCData(CData *cd, int *list, int size_list) {
+    cd = malloc(sizeof(CData));
+    cd->list = (int*) malloc(sizeof(int) * size_list);
+    cd->size = size_list;
+
     int i;
-    cd->size = size;
-    for (i = 0; i < size; i++) {
+    for (i = 0; i < size_list; i++) {
       cd->list[i] = list[i];
     }
     return cd;
-
 }
 
 void cBubbleSort(struct CData *data, int s) {
@@ -43,5 +43,4 @@ void cBubbleSort(struct CData *data, int s) {
       }
     }
   }
-
 }

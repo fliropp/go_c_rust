@@ -1,7 +1,7 @@
 package main
 
 /*
-#cgo LDFLAGS: ./go_rust/target/release/libgo_rust.a
+#cgo LDFLAGS: ./go_rust/target/release/liblib.a
 #include "./go_rust/dist/lib.h"
 #include "./goC/funk.c"
 */
@@ -11,7 +11,13 @@ import (
 	"fmt"
 	"math/rand"
 	"time"
+	"unsafe"
 )
+
+type GData struct {
+	size int
+	list []int32
+}
 
 func main() {
 	fmt.Println("BASIC FUNCTION")
@@ -25,48 +31,56 @@ func main() {
 	tre := C.rLoop()
 	fmt.Println(fmt.Sprintf("rust loop took: %d (res: %d)", time.Since(rBefore), tre))
 
-	fmt.Println("BUBBLE SORT")
-	slaize, _ := genRandSlice(9)
+	fmt.Println("\nBUBBLE SORT")
+	slaize, _ := genRandSlice(30)
 	glaize := make([]int32, len(slaize))
-	/*claize := make([]int32, len(slaize))
-	rlaize := make([]int32, len(slaize))*/
 
 	copy(glaize, slaize)
-	/*copy(claize, slaize)
-	copy(rlaize, slaize)*/
+	l := len(slaize)
 
 	fmt.Println("go_go:")
-	fmt.Println(glaize)
+	gints := GData{
+		size: len(glaize),
+		list: glaize,
+	}
+	fmt.Println(gints.list)
 	gBefore = time.Now()
-	gBubbleSort(glaize)
+	gBubbleSort(gints)
 	fmt.Println(fmt.Sprintf("go bubble sort took: %d", time.Since(gBefore)))
-	fmt.Println(glaize)
+	fmt.Println(gints.list)
 
-	fmt.Println("c_go:")
-	fmt.Println(slaize)
-	l := len(slaize)
+	fmt.Println("\nc_go:")
 	cints := make([]C.int, l)
 	for i, d := range slaize {
 		cints[i] = C.int(d)
 	}
-	fmt.Println(cints)
 	cd := C.createCData(&C.struct_CData{}, (*C.int)(&cints[0]), C.int(len(cints)))
+	defer C.free(unsafe.Pointer(cd.list))
+	lzt := (*[1 << 30]C.int)(unsafe.Pointer(cd.list))[:len(cints):len(cints)]
+	fmt.Println(lzt)
 	cBefore = time.Now()
 	C.cBubbleSort(cd, C.int(len(cints)))
 	fmt.Println(fmt.Sprintf("c bubble sort took: %d", time.Since(cBefore)))
-	fmt.Println(len(cints))
+	lzt = (*[1 << 30]C.int)(unsafe.Pointer(cd.list))[:len(cints):len(cints)]
+	fmt.Println(lzt)
 
 	fmt.Println("r_go:")
-	fmt.Println(slaize)
-	var crints C.struct_Data
-	for i, d := range slaize {
-		crints.list[i] = C.int(d)
-	}
-	rBefore = time.Now()
-	_ = C.rBubbleSort(&crints)
-	fmt.Println(fmt.Sprintf("rust bubble sort took: %d", time.Since(rBefore)))
-	fmt.Println(crints.list)
 
+	prints := (*C.int)(C.malloc(C.size_t(len(slaize))))
+	defer C.free(unsafe.Pointer(prints))
+	rints := (*[100000]C.int)(unsafe.Pointer(prints))[:len(slaize):len(slaize)]
+	for i, d := range slaize {
+		rints[i] = C.int(d)
+	}
+	rd := C.new_rd_data((*C.int)(&rints[0]), C.ulong(len(rints)))
+	lzt = (*[1 << 30]C.int)(unsafe.Pointer(rd.list))[:len(rints):len(rints)]
+	fmt.Println(lzt)
+
+	rBefore = time.Now()
+	C.rBubbleSort(&rd, C.ulong(len(rints)), C.ulong(len(rints)))
+	fmt.Println(fmt.Sprintf("rust bubble sort took: %d", time.Since(rBefore)))
+	lzt = (*[1 << 30]C.int)(unsafe.Pointer(rd.list))[:len(rints):len(rints)]
+	fmt.Println(lzt)
 }
 
 func goLoop() int {
@@ -77,11 +91,11 @@ func goLoop() int {
 	return s
 }
 
-func gBubbleSort(list []int32) {
-	for i := 0; i < len(list)-1; i++ {
-		for j := 0; j < len(list)-i-1; j++ {
-			if list[j] > list[j+1] {
-				list[j], list[j+1] = list[j+1], list[j]
+func gBubbleSort(gdata GData) {
+	for i := 0; i < len(gdata.list)-1; i++ {
+		for j := 0; j < len(gdata.list)-i-1; j++ {
+			if gdata.list[j] > gdata.list[j+1] {
+				gdata.list[j], gdata.list[j+1] = gdata.list[j+1], gdata.list[j]
 			}
 		}
 
