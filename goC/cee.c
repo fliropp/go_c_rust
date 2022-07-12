@@ -7,12 +7,14 @@ int main() {
   int s = sizeof(l) / sizeof(int);
   struct CData *cd = createCData(cd, pl, s);
   int i;
+  printf("Before Bubble Sort:\n");
   for (i = 0; i < s; i++) {
-    printf("item: %d \n", cd->list[i]);
+    printf("%d ", cd->list[i]);
   }
   cBubbleSort(cd, s);
+  printf("\nAfter Bubble Sort:\n");
   for (i = 0; i < s; i++) {
-    printf("item: %d \n", cd->list[i]);
+    printf("%d ", cd->list[i]);
   }
   return 0;
 }
