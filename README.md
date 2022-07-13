@@ -8,6 +8,7 @@ cargo return
 
 #RUST from C
 ```
+(rustc --crate-type=staticlib lib/src/lib.rs --crate-name=go_rust)
 gcc -I. -o rust rust.c ../go_rust/target/release/liblib.a
 ./rust
 ```

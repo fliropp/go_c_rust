@@ -19,6 +19,8 @@ typedef struct RData {
 
 int32_t rLoop(void);
 
+int32_t rfib(int32_t n);
+
 struct RData new_rd_data(int32_t *ptr_lzt, uintptr_t size);
 
 void rBubbleSort(struct RData *ptr_data, uintptr_t n, uintptr_t c);

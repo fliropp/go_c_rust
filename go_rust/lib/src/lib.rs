@@ -10,6 +10,14 @@ pub extern "C" fn rLoop() -> i32 {
     return s
 }
 
+#[no_mangle]
+pub extern "C" fn rfib(n: i32) -> i32 {
+    if n <= 1 {
+        return n;
+    }
+    return rfib(n - 1) + rfib(n - 2)
+}
+
 #[repr(C)]
 pub struct RData {
     pub size: usize,

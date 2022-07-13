@@ -31,8 +31,19 @@ func main() {
 	tre := C.rLoop()
 	fmt.Println(fmt.Sprintf("rust loop took: %d (res: %d)", time.Since(rBefore), tre))
 
+	fmt.Println("FIBONACCI (recursion)")
+	gBefore = time.Now()
+	gf := gfib(25)
+	fmt.Println(fmt.Sprintf("go fib took: %d (res: %d)", time.Since(gBefore), gf))
+	cBefore = time.Now()
+	cf := C.cfib(25)
+	fmt.Println(fmt.Sprintf("c fib took: %d (res: %d)", time.Since(cBefore), cf))
+	rBefore = time.Now()
+	rf := C.rfib(25)
+	fmt.Println(fmt.Sprintf("rust fib took: %d (res: %d)", time.Since(rBefore), rf))
+
 	fmt.Println("\nBUBBLE SORT")
-	glaize, claize := genRandSlice(500)
+	glaize, claize := genRandSlice(10)
 	rlaize := make([]int32, len(glaize))
 	copy(rlaize, glaize)
 
@@ -109,6 +120,13 @@ func gBubbleSort(gdata GData) {
 		}
 
 	}
+}
+
+func gfib(n int) int {
+	if n <= 1 {
+		return n
+	}
+	return gfib(n-1) + gfib(n-2)
 }
 
 func genRandSlice(size int) ([]int32, []C.int) {
